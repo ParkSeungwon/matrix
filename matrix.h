@@ -23,6 +23,7 @@ public:
 	Matrix<T> operator+(const Matrix<T>& r) const;
 	Matrix<T> operator-(const Matrix<T>& r) const;
 	Matrix<T> operator*(const Matrix<T>& r) const;
+	Matrix<T>& operator=(const Matrix<T>& r);
 	Matrix<T> operator*(const T& r) const {return r * *this;}
 	bool operator==(const Matrix<T>& r) const;
 	friend Matrix<T> operator*(const T l, const Matrix<T>& r) {

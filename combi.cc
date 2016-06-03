@@ -97,6 +97,15 @@ nPr::nPr(int n, int r) : Combination(n, r)
 	ar[r-1] = 0;
 }
 	
+void nPr::rewind()
+{
+	for(int i=0; i<r; i++) {
+		ar[i] = i + 1;
+		on[i] = true;
+	}
+	ar[r-1] = 0;
+}
+
 bool nPr::next()
 {	
 	inc_ar(r-1);

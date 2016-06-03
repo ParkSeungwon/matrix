@@ -16,6 +16,7 @@ int main()
 	Matrix<float> m3 {{
 		{1},{2},{3}
 	}};
+	m3 = {{{2},{3},{4}}};
 	cout << endl;
 	(3*m*m3).show();
 	cout << endl;
@@ -33,6 +34,9 @@ int main()
 		{0.2,3},
 		{2,8}
 	}};
+	m4.show();
+	m4 = {{
+		{2,3},{3,5}}};
 	m4.show();
 	auto k = m4.inverse();
 	(k*m4).show();
@@ -53,5 +57,5 @@ int main()
 	unsigned char cc = 67;
 	cout << cc << endl;
 	MagicSquare ms(3);
-	ms.partial_nPr();
+	ms.build();
 }

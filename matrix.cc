@@ -60,6 +60,21 @@ bool Matrix<T>::operator==(const Matrix<T>& r) const
 }
 
 template <typename T>
+Matrix<T>& Matrix<T>::operator=(const Matrix<T>& r) 
+{
+	if(width != r.width || height != r.height) release();
+	width = r.width;
+	height = r.height;
+	alloc();
+	for(int y=0; y<height; y++) {
+		for(int x=0; x<width; x++) {
+			arr[y][x] = r.arr[y][x];
+		}
+	}
+	return *this;
+}
+
+template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& r) const
 {
 	if(width != r.width || height != r.height) throw MatrixException("w, h does not match");

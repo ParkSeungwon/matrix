@@ -1,6 +1,7 @@
 #pragma once
 #include"matrix.h"
-
+#include<vector>
+class nPr;
 class MagicSquare : public Matrix<int>
 {
 public:
@@ -8,7 +9,6 @@ public:
 	MagicSquare(std::vector<std::vector<int>> l);
 	void build();
 	static Matrix<int> result;
-	void partial_nPr();
 
 protected:
 	int add_line(int);
@@ -18,7 +18,7 @@ protected:
 	bool full_check();
 
 private:
+	nPr **p;
 	int line_sum;
 	std::vector<int> nums;
-	std::vector<std::vector<int>> parts;
 };

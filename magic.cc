@@ -1,5 +1,6 @@
 #include<iostream>
 #include<cmath>
+#include<string>
 #include<algorithm>
 #include"magic.h"
 #include"matrix.cc"
@@ -20,54 +21,33 @@ MagicSquare::MagicSquare(vector<vector<int>> v) : Matrix<int>(v) {
 	line_sum = width * (1 + width * width) / 2;
 }
 
-//void MagicSquare::build()
-//{
-//	if(width == 3 || width == 4) {
-//		vector<int> s;
-//		for(int i=1; i<=width*width; i++) s.insert(i);
-//		auto p = partial_nPr();
-//		while(p.next()) {
-//			int sum = 0;
-//			for(int i-0; i<p.size(); i++) sum += p[i];
-//			if(sum == line_sum) {
-//				for(int i-0; i<p.size(); i++) s.erase(p[i]);
-//			while(
-//			for(int y=0, i=0; y<width; y++) {
-//				for(int x=0; x<width; x++) {
-//					arr[y][x] = p[i++];
-//				}
-//				if(add_line(y) != line_sum) break;
-//				else if(y == width-1 && full_check()) show();
-//			}
-//		}
-//	}
-//}
-
-void MagicSquare::partial_nPr()
+void MagicSquare::build()
 {
-	nPr p(nums.size(), width);
-	while(p.next()) {
-		int sum = 0;
-		for(int i=0; i<width; i++) sum += nums[p[i]-1];
-		if(sum == line_sum) {
-			if(nums.size() == width) {
-				if(full_check()) show();
-			} else {
-				vector<int> v;
-				for(int i=0; i<width; i++) v.push_back(nums[p[i]-1]);
-				nums.erase(remove_if(nums.begin(), nums.end(), [&v](int a) {
-						return find(v.begin(), v.end(), a) != v.end();}), nums.end());
-				parts.push_back(v);
-				partial_nPr();
+	vector<int> v;
+	int sz = nums.size();
+	if(sz == 0) {
+		if(full_check()) show();
+	} else {
+		nPr p(sz, width);
+		while(p.next()) {
+			int sum = 0;
+			for(int i=0; i<width; i++) sum += nums[p[i]-1];
+			if(sum == line_sum) {
+				for(int i=0; i<width; i++) {
+					v.push_back(nums[p[i]-1]);
+					arr[width-sz/width][i] = nums[p[i]-1];
+				}
+				auto it = remove_if(nums.begin(), nums.end(), [&v](int a) {
+						return find(v.begin(), v.end(), a) != v.end();});
+				nums.erase(it, nums.end());
+				build();
+				nums.insert(nums.end(), v.begin(), v.end());
+				v.clear();
+				sort(nums.begin(), nums.end());
 			}
 		}
 	}
-	for(auto& a : parts.back()) nums.push_back(a);
-	parts.pop_back();
-	sort(nums.begin(), nums.end());
 }
-
-
 
 int MagicSquare::add_line(int n)
 {

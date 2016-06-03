@@ -54,6 +54,7 @@ public:
 	nPr(int n, int r);
 	virtual ~nPr() {delete [] on;}
 	bool next();
+	void rewind();
 	int count() const;
 
 private:
