@@ -18,7 +18,6 @@ protected:
 	bool full_check();
 
 private:
-	nPr **p;
 	int line_sum;
 	std::vector<int> nums;
 };

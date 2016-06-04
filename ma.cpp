@@ -1,15 +1,22 @@
 #include"matrix.cc"
 #include"rational.h"
+#include"imaginary.h"
 #include"combi.h"
 #include"magic.h"
 
 int main()
 {
-	Matrix<float> m {{
+	Matrix<Ratio> m {{
 		{3,0,0},
 		{0,3,4},
 		{1,2,0}
 	}};
+
+	//Matrix<float> fm(3,3);
+	//(3*(fm.E())).show();
+
+	m.inverse().show();
+
 	m.surround(1.2).show();
 	m.show();
 
@@ -18,7 +25,7 @@ int main()
 	}};
 	m3 = {{{2},{3},{4}}};
 	cout << endl;
-	(3*m*m3).show();
+	//(3*m*m3).show();
 	cout << endl;
 	Matrix<char> m2 {{
 		{67, 68,69}
@@ -56,6 +63,24 @@ int main()
 	m.E().show();
 	unsigned char cc = 67;
 	cout << cc << endl;
-	MagicSquare ms(3);
+	MagicSquare ms(4);
 	ms.build();
+	Matrix<Root> mi {{
+		{3, 2},
+		{Ratio(2,3), Root(2,2)}
+	}};
+
+	auto aa = mi.inverse();
+	auto bb = aa.One()*4;
+	bb.show();
+	aa.show();
+	(aa*mi).show();
+	Matrix<Imag> mii {{
+		{Imag(1,2), Imag(Root(2,2))},
+		{3, 2}
+	}};
+	auto t = mii.ptr();
+	cout << *(t+1) << endl;
+	(mii*mii).show();
+	mii.inverse().show();
 }

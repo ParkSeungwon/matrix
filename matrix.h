@@ -19,6 +19,8 @@ class Matrix
 public:
 	Matrix(int w, int h);
 	Matrix(std::vector<std::vector<T>> v);
+	template <typename T2>
+	Matrix(Matrix<T2>& r);
 	virtual ~Matrix();
 	Matrix<T> operator+(const Matrix<T>& r) const;
 	Matrix<T> operator-(const Matrix<T>& r) const;
@@ -30,20 +32,21 @@ public:
 		Matrix<T> m(r.width, r.height);
 		for(int y=0; y<r.height; y++) {
 			for(int x=0; x<r.width; x++) {
-				m.arr[y][x] = l * r.arr[y][x];
+				m.arr[y*r.width+x] = l * r.arr[y*r.width+x];
 			}
 		}
 		return m;
 	}
-	T& operator()(int x, int y) { return arr[y][x]; }
+	T& operator()(int x, int y) { return arr[y*width+x]; }
 	Matrix<T> inverse() const;
 	Matrix<T> E() const;
 	Matrix<T> One() const;
 	Matrix<T> surround(T wall = 0) const;
+	T* ptr() {return arr;}
 	void show();
 	
 protected:
-	T** arr;
+	T* arr;
 	int width, height;
 
 private:

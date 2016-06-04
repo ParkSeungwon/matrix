@@ -7,10 +7,6 @@
 #include"combi.h"
 using namespace std;
 
-//unsigned MagicSquare::found = 0;
-//unsigned MagicSquare::to_find = 0;
-//Char2D MagicSquare::result = {};
-
 MagicSquare::MagicSquare(int w) : Matrix<int>(w, w)
 {
 	line_sum = width * (1 + width * width) / 2;
@@ -35,7 +31,7 @@ void MagicSquare::build()
 			if(sum == line_sum) {
 				for(int i=0; i<width; i++) {
 					v.push_back(nums[p[i]-1]);
-					arr[width-sz/width][i] = nums[p[i]-1];
+					arr[width*width-sz + i] = nums[p[i]-1];
 				}
 				auto it = remove_if(nums.begin(), nums.end(), [&v](int a) {
 						return find(v.begin(), v.end(), a) != v.end();});
@@ -52,28 +48,28 @@ void MagicSquare::build()
 int MagicSquare::add_line(int n)
 {
 	int sum = 0;
-	for(int x=0; x<width; x++) sum += arr[n][x];
+	for(int x=0; x<width; x++) sum += arr[n*width+x];
 	return sum;
 }
 
 int MagicSquare::add_row(int n)
 {
 	int sum = 0;
-	for(int y=0; y<height; y++) sum += arr[y][n];
+	for(int y=0; y<height; y++) sum += arr[y*width+n];
 	return sum;
 }
 
 int MagicSquare::add_criss()
 {
 	int sum = 0;
-	for(int x=0, y=0; x<width; x++, y++) sum += arr[y][x];
+	for(int x=0, y=0; x<width; x++, y++) sum += arr[y*width+x];
 	return sum;
 }
 
 int MagicSquare::add_cross()
 {
 	int sum = 0;
-	for(int x=width-1, y=0; y<height; x--, y++) sum += arr[y][x];
+	for(int x=width-1, y=0; y<height; x--, y++) sum += arr[y*width+x];
 	return sum;
 }
 

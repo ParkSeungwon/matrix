@@ -90,6 +90,7 @@ bool nHr::next()
 nPr::nPr(int n, int r) : Combination(n, r)
 {
 	on = new bool[n+2];
+	for(int i=0; i<n+2; i++) on[i] = false;
 	for(int i=0; i<r; i++) {
 		ar[i] = i + 1;
 		on[i] = true;
