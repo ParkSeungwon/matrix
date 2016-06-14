@@ -28,7 +28,7 @@ int main()
 	//(3*m*m3).show();
 	cout << endl;
 	Matrix<char> m2 {{
-		{67, 68,69}
+		{67, 68, 69}
 	}};
 	m2.show();
 	auto a = m2.surround('$');
@@ -63,7 +63,7 @@ int main()
 	m.E().show();
 	unsigned char cc = 67;
 	cout << cc << endl;
-	MagicSquare ms(4);
+	MagicSquare ms(3);
 	ms.build();
 	Matrix<Root> mi {{
 		{3, 2},
