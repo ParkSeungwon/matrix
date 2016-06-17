@@ -15,19 +15,17 @@ Ratio cal(Ratio a, int c, Ratio b) {
 				try {
 					if(b == 0) throw 1;
 					else return a/b;
-				} catch (int e){}
+				} catch (int){}
 	}
 }
 
 Ratio cal(Ratio a, int c1, Ratio b, int c2, Ratio c) {
-	if((c1 == 1 || c1 == 2) && (c2 == 3 || c2 == 4)) return cal(a, c1, cal(b, c2, c));
-	else return cal(cal(a, c1, b), c2, c);
+	return ((c1 == 1 || c1 == 2) && (c2 == 3 || c2 == 4)) ? 
+		cal(a, c1, cal(b, c2, c)) : cal(cal(a, c1, b), c2, c);
 }
 
 void set_on(Ratio r) {
-	if(r.den == 1) {
-		if(r.n < 100 && r.n >= 0) on[r.n] = true;
-	}
+	if(r.den == 1 && r.n < 100 && r.n >= 0) on[r.n] = true;
 }
 
 int e(int n[5]) {

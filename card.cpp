@@ -7,29 +7,8 @@
 #include"combi.h"
 using namespace std;
 
-string Card::glyph[4] = {"♠", "♣", "♥", "♦"};
-
-bool Card::operator<(const Card& r) const 
-{//const const needed
-	return comp_n() < r.comp_n();
-}
-
-bool Card::operator==(int r) const {
-	if(n == r) return true;
-	else return false;
-}
-
-char Card::comp_c() const {
-	if(c == 'C') return 'E';
-	else return c;
-}
-
-int Card::comp_n() const {
-	if(n == 1) return 14;
-	else return n;
-}
-
-auto f = [](Card a, Card b) { return !(a<b); };
+constexpr const char* Card::glyph[4];
+constexpr const char Card::g[4];
 
 Hand::Hand(array<Card, 5> h) 
 { 
@@ -39,9 +18,8 @@ Hand::Hand(array<Card, 5> h)
 
 bool Hand::is_flush() const
 {
-	bool flush = true;
-	for(int i=0; i<4; i++) if(hand[i].c != hand[i+1].c) flush = false;
-	return flush;
+	for(int i=0; i<4; i++) if(hand[i].c != hand[i+1].c) return false;
+	return true;
 }
 
 bool Hand::is_straight() const
@@ -50,9 +28,7 @@ bool Hand::is_straight() const
 	sort(h.begin(), h.end());
 	int serial = 0;
 	for(int i=0; i<4; i++)	if(h[i].comp_n() == h[i+1].comp_n() - 1) serial++; 
-	if(serial == 4) return true;
-	else if(serial == 3 && h[3].n == 5 && h[4].n == 1) return true; 
-	return false;
+	return serial == 4 ? true : (serial == 3 && h[3].n == 5 && h[4].n == 1); 
 }
 
 int Hand::count_same()
@@ -78,18 +54,14 @@ void Hand::read_hand()
 		for(auto& a : hand) 
 			if(count(hand.begin(), hand.end(), a.n) == 2) a.family(false);
 	}
-	sort(hand.begin(), hand.end(), [](Card a, Card b) {
-			if((!a.family() && b.family()) || (a.family() && !b.family()))
-				return a.family() && !b.family();
-			else return !(a < b);
-			});
+	sort(hand.begin(), hand.end(), [](const Card& a, const Card& b) {
+			return (!a.family() && b.family()) || (a.family() && !b.family())
+				? a.family() && !b.family() : !(a < b); });
 }
 
 bool Hand::operator<(const Hand& r) const
 {
-	if(point() == r.point()) {
-		return hand < r.hand;
-	} else return point() < r.point();
+	return point() == r.point() ? hand < r.hand : point() < r.point();
 }
 
 void Hand::show()
@@ -117,7 +89,16 @@ ostream& operator<<(ostream& l, const Card& r)
 		case 'D': i = 3; break;
 		case 'S': i = 0;
 	}
-	l << r.glyph[i] << ' ' << r.n;
+	l << r.glyph[i];
+	char ch;
+	switch(r.n) {
+		case 1: ch = 'A'; break;
+		case 11: ch = 'J'; break;
+		case 12: ch = 'Q'; break;
+		case 13: ch = 'K'; break;
+		default: ch = r.n;
+	}
+	ch > 1 && ch < 11 ? l << +ch : l << ch;
 	return l;
 }
 
@@ -128,11 +109,10 @@ int main()
 	Card card;
 	array<Card, 52> deck;
 	array<Card, 5> player1, player2;
-	char g[4] {'C', 'D', 'H', 'S'};
-	for(int i=0, k=0; i<4; i++) {
-		for(int j=1; j<14; j++) {
-			card.n = j;
-			card.c = g[i];
+	for(int i=1, k=0; i<14; i++) {
+		for(char a : {'C', 'D', 'H', 'S'}) {
+			card.n = i;
+			card.c = a;
 			deck[k++] = card;
 		}
 	}
@@ -147,8 +127,8 @@ int main()
 	copy_n(deck.begin(), 5, player1.begin());
 	copy_n(deck.begin()+7, 5, player2.begin());
 	nCr c(7, 5);
+	array<Card, 5> tmp;
 	while(c.next()) {
-		array<Card, 5> tmp;
 		for(int i=0; i<5; i++) tmp[i] = deck[c[i]-1];
 		if(Hand(player1) < Hand(tmp)) player1 = tmp;
 		for(int i=0; i<5; i++) tmp[i] = deck[c[i]-1+7];
@@ -158,8 +138,7 @@ int main()
 	Hand h2(player2);
 	h1.show();
 	h2.show();
-	if(h1<h2) cout << "Player 2 won !!" << endl;
-	else cout << "Player 1 won !!" << endl;
+	cout << "Player " << (h1 < h2 ? 2 : 1) << " won !!" << endl;
 }
 
 

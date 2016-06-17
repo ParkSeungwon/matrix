@@ -101,10 +101,7 @@ bool Root::isRational()
 bool Root::operator==(const Root& r)
 {
 	if(ir.size() == r.ir.size()) {
-		for(auto& a : r.ir) {
-			if(ir[a.first] == a.second) ;
-			else return false;
-		}
+		for(auto& a : r.ir) if(ir[a.first] != a.second) return false;
 		return true;
 	} else return false;
 }
@@ -116,27 +113,6 @@ bool Root::operator<(const Root& r)
 		Root t = *this - r;
 		return t.approx() < 0;
 	}
-}
-
-bool Root::operator>(const Root& r)
-{
-	if(*this == r) return false;
-	else {
-		Root t = *this - r;
-		return t.approx() > 0;
-	}
-}
-
-bool Root::operator>=(const Root& r)
-{
-	if(*this > r || *this == r) return true;
-	else return false;
-}
-
-bool Root::operator<=(const Root& r)
-{
-	if(*this < r || *this == r) return true;
-	else return false;
 }
 
 float Root::approx()

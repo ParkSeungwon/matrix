@@ -9,6 +9,7 @@ public:
 	
 	Ratio(int n = 0, int den = 1);
 	bool operator==(const Ratio& r) {return (n == r.n) && (den == r.den);}
+	bool operator!=(const Ratio& r) {return !(*this == r);}
 	Ratio& operator+=(const Ratio& r);
 	bool operator>(const Ratio& r);
 	bool operator<(const Ratio& r);

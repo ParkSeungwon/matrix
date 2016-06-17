@@ -5,16 +5,17 @@ class Card
 public:
 	int n;
 	char c;
-	bool operator<(const Card& r) const;
-	bool operator==(int r) const;
-	char comp_c() const;
-	int comp_n() const;
+	bool operator<(const Card& r) const { return comp_n() < r.comp_n(); }
+	bool operator==(int r) const { return n == r; }
+	char comp_c() const { return c == 'C' ? 'E' : c ; }
+	int comp_n() const { return n == 1 ? 14 : n ; }
 	friend std::ostream& operator<<(std::ostream& l, const Card& r);
 	void family(bool f) {family_ = f;}
-	bool family() { return family_;}
+	bool family() const { return family_;}
 
 protected:
-	static std::string glyph[4];
+	static constexpr const char* glyph[4]  {"♠ ", "♣ ", "♥ ", "♦ "};
+	static constexpr const char g[4] {'C', 'H', 'D', 'S'};
 	bool family_ = false;
 
 private:

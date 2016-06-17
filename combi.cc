@@ -1,7 +1,6 @@
 #include "combi.h"
 #include <set>
 #include<cmath>
-using namespace std;
 
 Combination::Combination(int n, int r)
 {
@@ -13,8 +12,7 @@ Combination::Combination(int n, int r)
 
 int Combination::factorial(int n) 
 {
-	if(n == 1) return n;
-	return n * factorial(n-1);
+	return n == 1 ? n : n * factorial(n-1);
 }
 
 int nPr::count() const
