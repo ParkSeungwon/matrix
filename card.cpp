@@ -2,11 +2,11 @@
 #include<random>
 #include<algorithm>
 #include<iostream>
+#include<exception>
 #include<string>
-#include "card.h"
+#include"card.h"
 #include"combi.h"
 using namespace std;
-
 constexpr const char* Card::glyph[4];
 constexpr const char Card::g[4];
 
@@ -45,23 +45,35 @@ int Hand::count_same()
 	return k+l == 4 ? 6 : k+l;
 }
 
+bool Card::operator>(const Card& r)const
+{//In hand array compare, this should not be used before < compare.
+	return comp_n()==r.comp_n() ? comp_c()>r.comp_c() : comp_n()>r.comp_n();
+}
+
 void Hand::read_hand()
 {
 	point(count_same());
-	if(is_flush()) point(point() + 5);
-	if(is_straight()) point(point() + 4);
-	if(point() == 6) {
+	if(is_flush()) point_ += 5;
+	if(is_straight()) point_ += 4;
+	if(point() == 6) {//for sorting flush case 
 		for(auto& a : hand) 
 			if(count(hand.begin(), hand.end(), a.n) == 2) a.family(false);
 	}
-	sort(hand.begin(), hand.end(), [](const Card& a, const Card& b) {
-			return (!a.family() && b.family()) || (a.family() && !b.family())
-				? a.family() && !b.family() : !(a < b); });
+	auto it = partition(hand.begin(), hand.end(), [](const Card& a) {
+			return a.family();});
+	sort(hand.begin(), it, greater<Card>());
+	sort(it, hand.end(), greater<Card>());
+//	sort(hand.begin(), hand.end(), [](const Card& a, const Card& b) {
+//			return (!a.family() && b.family()) || (a.family() && !b.family())
+//				? a.family() && !b.family() : a > b; });
 }
 
 bool Hand::operator<(const Hand& r) const
 {
-	return point() == r.point() ? hand < r.hand : point() < r.point();
+	if(point() == r.point()) {
+		if(hand == r.hand) return !(hand[0] > r.hand[0]);//compare card
+		else return hand < r.hand;//compare array
+	} else return point() < r.point();
 }
 
 void Hand::show()
@@ -82,14 +94,18 @@ void Hand::show()
 
 ostream& operator<<(ostream& l, const Card& r)
 {
-	int i;
+//	if(!r.show()) return l << Card::utf8chr(static_cast<int>(Unicode::CARDBACK));
+	Unicode u;
 	switch(r.c) {
-		case 'C': i = 1; break;
-		case 'H': i = 2; break;
-		case 'D': i = 3; break;
-		case 'S': i = 0;
+		case 'C': u = Unicode::CLUB; break;
+		case 'H': u = Unicode::HEART; break;
+		case 'D': u = Unicode::DIAMOND; break;
+		case 'S': u = Unicode::SPADE;
 	}
-	l << r.glyph[i];
+
+	l << Card::utf8chr(static_cast<int>(u));
+	l << ' ';
+	//l << r.glyph[i];
 	char ch;
 	switch(r.n) {
 		case 1: ch = 'A'; break;
@@ -102,13 +118,20 @@ ostream& operator<<(ostream& l, const Card& r)
 	return l;
 }
 
+string Card::utf8chr(int cp)
+{
+	char c[5]={ 0x00,0x00,0x00,0x00,0x00 };
+	if     (cp<=0x7F) { c[0] = cp;  }
+	else if(cp<=0x7FF) { c[0] = (cp>>6)+192; c[1] = (cp&63)+128; }
+	else if(0xd800<=cp && cp<=0xdfff) {} //invalid block of utf8
+	else if(cp<=0xFFFF) { c[0] = (cp>>12)+224; c[1]= ((cp>>6)&63)+128; c[2]=(cp&63)+128; }
+	else if(cp<=0x10FFFF) { c[0] = (cp>>18)+240; c[1] = ((cp>>12)&63)+128; c[2] = ((cp>>6)&63)+128; c[3]=(cp&63)+128; }
+	return string(c);
+}
 
-
-int main()
+Deck::Deck()
 {
 	Card card;
-	array<Card, 52> deck;
-	array<Card, 5> player1, player2;
 	for(int i=1, k=0; i<14; i++) {
 		for(char a : {'C', 'D', 'H', 'S'}) {
 			card.n = i;
@@ -116,16 +139,42 @@ int main()
 			deck[k++] = card;
 		}
 	}
+}
 
+void Deck::shuffle_deck()
+{ 
+	for(auto& a : deck) a.show(false);
 	shuffle(deck.begin(), deck.end(), random_device());
+	top = 0;
+}
+	
+Card Deck::distribute_card()
+{
+	if(top < 52) return deck[top++];
+	else throw No_card_exception();
+}
+
+int Player::cal_point(const array<Card, 52>& deck)
+{
+	int open = count_if(deck.begin(), deck.end(), [](Card c){return !c.show();});
+	nCr ncr(52 - open, 7 - 4);
+}
+int main()
+{
+	Deck deck;
+	deck.shuffle_deck();
+	array<Card, 5> player1, player2;
+
 	cout << "Player 1 has : ";
 	for(int i=0; i<7; i++) cout << deck[i] << ' ';
 	cout << endl;
 	cout << "Player 2 has : ";
 	for(int i=7; i<14; i++) cout << deck[i] << ' ';
 	cout << endl;
-	copy_n(deck.begin(), 5, player1.begin());
-	copy_n(deck.begin()+7, 5, player2.begin());
+	for(auto& a : player1) a = deck.distribute_card();
+	deck.distribute_card();
+	deck.distribute_card();
+	for(auto& a : player2) a = deck.distribute_card();
 	nCr c(7, 5);
 	array<Card, 5> tmp;
 	while(c.next()) {
