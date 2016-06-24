@@ -16,6 +16,18 @@ Hand::Hand(array<Card, 5> h)
 	read_hand();
 }
 
+Hand::Hand(array<Card, 7> h) 
+{
+	copy_n(h.begin(), 5, hand.begin());
+	nCr c(7, 5);
+	array<Card, 5> tmp;
+	while(c.next()) {
+		for(int i=0; i<5; i++) tmp[i] = h[c[i]-1];
+		if(Hand(hand) < Hand(tmp)) hand = tmp;
+	}
+	read_hand();
+}
+
 bool Hand::is_flush() const
 {
 	for(int i=0; i<4; i++) if(hand[i].c != hand[i+1].c) return false;
@@ -163,7 +175,7 @@ int main()
 {
 	Deck deck;
 	deck.shuffle_deck();
-	array<Card, 5> player1, player2;
+	array<Card, 7> player1, player2;
 
 	cout << "Player 1 has : ";
 	for(int i=0; i<7; i++) cout << deck[i] << ' ';
@@ -172,17 +184,8 @@ int main()
 	for(int i=7; i<14; i++) cout << deck[i] << ' ';
 	cout << endl;
 	for(auto& a : player1) a = deck.distribute_card();
-	deck.distribute_card();
-	deck.distribute_card();
 	for(auto& a : player2) a = deck.distribute_card();
-	nCr c(7, 5);
-	array<Card, 5> tmp;
-	while(c.next()) {
-		for(int i=0; i<5; i++) tmp[i] = deck[c[i]-1];
-		if(Hand(player1) < Hand(tmp)) player1 = tmp;
-		for(int i=0; i<5; i++) tmp[i] = deck[c[i]-1+7];
-		if(Hand(player2) < Hand(tmp)) player2 = tmp;
-	}
+	
 	Hand h1(player1);
 	Hand h2(player2);
 	h1.show();

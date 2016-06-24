@@ -58,6 +58,7 @@ class Hand
 {
 public:
 	Hand(std::array<Card, 5> h);
+	Hand(std::array<Card, 7> h);
 //	int drop_card(int n);
 //	int get_card(Card c);
 	bool operator<(const Hand& r) const;
