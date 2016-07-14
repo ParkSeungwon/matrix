@@ -18,6 +18,7 @@ Hand::Hand(array<Card, 5> h)
 
 Hand::Hand(array<Card, 7> h) 
 {
+	int sz = cards.size();
 	copy_n(h.begin(), 5, hand.begin());
 	nCr c(7, 5);
 	array<Card, 5> tmp;
@@ -26,6 +27,29 @@ Hand::Hand(array<Card, 7> h)
 		if(Hand(hand) < Hand(tmp)) hand = tmp;
 	}
 	read_hand();
+}
+
+float Hand::predict(array<Card, 52> d)
+{
+	auto part = partition(d.begin(), d.end(), [](Card a) {return !a.show();});
+	for(auto it = d.begin(); it != part; it++) {
+		if(find(cards.begin(), cards.end(), *it) != cards.end()) {
+			swap(*it, *(part-1));
+			part--;
+		}
+	}
+	int sz = part - d.begin();
+	nCr ncr(sz, 7 - cards.size());
+	array<Card, 7> c;
+	int m = 0, n = 0;
+	while(ncr.next()) {
+		int i;
+		for(i=0; i<ncr.size(); i++) c[i] = d[ncr[i] - 1];
+		copy(cards.begin(), cards.end(), c.begin() + i);
+		m += Hand(c).point();
+		n++;
+	}
+	return float(m) / n;
 }
 
 bool Hand::is_flush() const
@@ -62,12 +86,12 @@ bool Card::operator>(const Card& r)const
 	return comp_n()==r.comp_n() ? comp_c()>r.comp_c() : comp_n()>r.comp_n();
 }
 
-void Hand::read_hand()
+int Hand::read_hand()
 {
-	point(count_same());
+	point_ = count_same();
 	if(is_flush()) point_ += 5;
 	if(is_straight()) point_ += 4;
-	if(point() == 6) {//for sorting flush case 
+	if(point_ == 6) {//for sorting flush case 
 		for(auto& a : hand) 
 			if(count(hand.begin(), hand.end(), a.n) == 2) a.family(false);
 	}
@@ -75,6 +99,7 @@ void Hand::read_hand()
 			return a.family();});
 	sort(hand.begin(), it, greater<Card>());
 	sort(it, hand.end(), greater<Card>());
+	return point_;
 //	sort(hand.begin(), hand.end(), [](const Card& a, const Card& b) {
 //			return (!a.family() && b.family()) || (a.family() && !b.family())
 //				? a.family() && !b.family() : a > b; });
@@ -160,10 +185,12 @@ void Deck::shuffle_deck()
 	top = 0;
 }
 	
-Card Deck::distribute_card()
+Card Deck::distribute_card(bool open)
 {
-	if(top < 52) return deck[top++];
-	else throw No_card_exception();
+	if(top < 52) {
+		deck[top].show(open);
+		return deck[top++];
+	} else throw No_card_exception();
 }
 
 int Player::cal_point(const array<Card, 52>& deck)
@@ -183,8 +210,8 @@ int main()
 	cout << "Player 2 has : ";
 	for(int i=7; i<14; i++) cout << deck[i] << ' ';
 	cout << endl;
-	for(auto& a : player1) a = deck.distribute_card();
-	for(auto& a : player2) a = deck.distribute_card();
+	for(auto& a : player1) a = deck.distribute_card(true);
+	for(auto& a : player2) a = deck.distribute_card(true);
 	
 	Hand h1(player1);
 	Hand h2(player2);

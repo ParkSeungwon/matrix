@@ -1,5 +1,6 @@
 #include<string>
 #include<array>
+#include<vector>
 #include<iostream>
 #include<exception>
 
@@ -42,7 +43,7 @@ public:
 	Deck();
 	std::array<Card, 52> deck;
 	void shuffle_deck();
-	Card distribute_card();
+	Card distribute_card(bool open);
 	Card operator[](int n) {return deck[n];}
 
 protected:
@@ -57,6 +58,7 @@ private:
 class Hand
 {
 public:
+	Hand() {}
 	Hand(std::array<Card, 5> h);
 	Hand(std::array<Card, 7> h);
 //	int drop_card(int n);
@@ -65,13 +67,15 @@ public:
 	void show();
 	int point() const {return point_;}
 	void point(int p) {point_ = p;}
+	float predict(std::array<Card, 52> deck);
 	std::array<Card, 5> hand;
+	std::vector<Card> cards;
 
 protected:
 	int point_;
 
 private:
-	void read_hand();
+	int read_hand();
 	bool is_straight() const;
 	bool is_flush() const;
 	int count_same();

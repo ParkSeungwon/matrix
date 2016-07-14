@@ -22,7 +22,10 @@ void MagicSquare::build()
 	vector<int> v;
 	int sz = nums.size();
 	if(sz == 0) {
-		if(full_check()) show();
+		if(full_check()) {
+			show();
+			cout << endl;
+		}
 	} else {
 		nPr p(sz, width);
 		while(p.next()) {
