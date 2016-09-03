@@ -1,23 +1,20 @@
 #include"combi.h"
 #include<iostream>
+#include<map>
 using namespace std;
 
-int main()
+int main(int c, char** v)
 {
-//	cout << nHr(10, 7).count();
-	long h = 0;
-	nHr nhr(10, 10);
-	while(nhr.next()) h++;;
-	float f;
-	for(int i=1; i<10; i++) {
-		int c = 0;
-		nCr ncr(10, i);
-		while(ncr.next()) c++;
-		nHr nhr(i, 10-i);
-		int hh = 0;
-		while(nhr.next()) hh++;
-		f = float(c * hh) / h;
-		cout << f << endl;
+	if(c < 3) return 0;
+	int x = atoi(v[1]);
+	int y = atoi(v[2]);
+	nHr nhr(y, x-y);
+	map<int, int> m;
+	while(nhr.next()) {
+		for(int i=1; i<=y; i++) m[i]++;
+		for(int i=0; i<nhr.size(); i++) m[nhr[i]]++;
+		for(auto& a : m) cout << a.second << ',';
+		cout << endl;
+		m.clear();
 	}
 }
-
