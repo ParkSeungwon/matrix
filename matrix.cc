@@ -3,33 +3,6 @@
 using namespace std;
 
 template <typename T>
-Matrix<T>::Matrix(int w, int h)
-{
-	width = w;
-	height = h;
-	arr = new T[width * height];
-	for(int i=0; i<width*height; i++) arr[i] = 0;
-}
-
-template <typename T>
-Matrix<T>::Matrix(vector<vector<T>> v)
-{
-	height = v.size();
-	width = v[0].size();
-	arr = new T[width * height];
-	for(int y=0, i=0; y<height; y++) {
-		for(int x=0; x<width; x++) {
-			arr[i++] = v[y][x];
-		}
-	}
-}
-
-template <typename T>
-Matrix<T>::~Matrix() {
-	delete [] arr;
-}
-
-template <typename T>
 bool Matrix<T>::operator==(const Matrix<T>& r) const
 {
 	if(width != r.width || height != r.height) return false;
@@ -46,37 +19,6 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& r)
 	arr = new T[width * height];
 	for(int i=0; i<width*height; i++) arr[i] = r.arr[i];
 	return *this;
-}
-
-template <typename T>
-Matrix<T> Matrix<T>::operator+(const Matrix<T>& r) const
-{
-	if(width != r.width || height != r.height) throw MatrixException("w, h does not match");
-	Matrix<T> m(width, height);
-	for(int i=0; i<width*height; i++) m.arr[i] = arr[i] + r.arr[i];
-	return m;
-}
-
-template <typename T>
-Matrix<T> Matrix<T>::operator-(const Matrix<T>& r) const
-{
-	if(width != r.width || height != r.height) throw MatrixException("w, h does not match");
-	Matrix<T> m(width, height);
-	for(int i=0; i<width*height; i++) m.arr[i] = arr[i] - r.arr[i];
-	return m;
-}
-
-template <typename T>
-Matrix<T> Matrix<T>::operator*(const Matrix<T>& r) const
-{
-	if(width != r.height) throw MatrixException("w, h does not match");
-	Matrix<T> m(r.width, height);
-	for(int y=0; y<height; y++) {
-		for(int x=0; x<r.width; x++) {
-			for(int i=0; i<width; i++) m.arr[y*width+x] = m.arr[y*width+x] + arr[y*width+i] * r.arr[i*width+x];
-		}
-	}
-	return m;
 }
 
 template <typename T>
